@@ -1,9 +1,9 @@
 "use server";
 
 import { ID, Query } from "node-appwrite";
-import { createAdminClient, createSessionClient } from "../appwrite";
-import { appwriteConfig } from "../appwrite/config";
-import { handleError, parseStringify } from "../utils";
+import { createAdminClient, createSessionClient } from "@/lib/appwrite";
+import { appwriteConfig } from "@/lib/appwrite/config";
+import { handleError, parseStringify } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { avatarPlaceholderUrl } from "@/constants";
@@ -21,9 +21,8 @@ const getUserByEmail = async (email: string) => {
 };
 
 export const sendEmailOTP = async ({ email }: { email: string }) => {
-  const { account } = await createAdminClient();
-
   try {
+    const { account } = await createAdminClient();
     const session = await account.createEmailToken(ID.unique(), email);
     return session.userId;
   } catch (error) {
@@ -38,27 +37,31 @@ export const createAccount = async ({
   fullName: string;
   email: string;
 }) => {
-  const existingUser = await getUserByEmail(email);
-  const accountId = await sendEmailOTP({ email });
+  try {
+    const existingUser = await getUserByEmail(email);
+    const accountId = await sendEmailOTP({ email });
 
-  if (!accountId) throw new Error("Failed to send email OTP");
+    if (!accountId) throw new Error("Failed to send email OTP");
 
-  if (!existingUser) {
-    const { databases } = await createAdminClient();
-    await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.usersCollectionId,
-      ID.unique(),
-      {
-        fullName,
-        email,
-        avatar: avatarPlaceholderUrl,
-        accountId,
-      },
-    );
+    if (!existingUser) {
+      const { databases } = await createAdminClient();
+      await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.usersCollectionId,
+        ID.unique(),
+        {
+          fullName,
+          email,
+          avatar: avatarPlaceholderUrl,
+          accountId,
+        },
+      );
+    }
+
+    return parseStringify({ accountId });
+  } catch (error) {
+    handleError(error, "Failed to create account");
   }
-
-  return parseStringify({ accountId });
 };
 
 export const verifySecret = async ({
@@ -74,7 +77,7 @@ export const verifySecret = async ({
     (await cookies()).set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "lax",
       secure: true,
     });
 
@@ -85,23 +88,27 @@ export const verifySecret = async ({
 };
 
 export const getCurrentUser = async () => {
-  const { databases, account } = await createSessionClient();
-  const result = await account.get();
+  try {
+    const { databases, account } = await createSessionClient();
+    const result = await account.get();
 
-  const user = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.usersCollectionId,
-    [Query.equal("accountId", result.$id)],
-  );
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      [Query.equal("accountId", result.$id)],
+    );
 
-  if (user.total <= 0) return null;
-  return parseStringify(user.documents[0]);
+    if (user.total <= 0) return null;
+    return parseStringify(user.documents[0]);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const signOutUser = async () => {
-  const { account } = await createSessionClient();
-
   try {
+    const { account } = await createSessionClient();
+
     await account.deleteSession("current");
     (await cookies()).delete("appwrite-session");
   } catch (error) {
@@ -121,6 +128,6 @@ export const signInUser = async ({ email }: { email: string }) => {
 
     return parseStringify({ accountId: null, error: "User not found" });
   } catch (error) {
-    handleError(error, "Failed to sign in");
+    handleError(error, "Failed to sign in user");
   }
 };

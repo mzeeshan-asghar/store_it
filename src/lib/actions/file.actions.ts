@@ -19,9 +19,8 @@ export const uploadFile = async ({
   accountId,
   path,
 }: UploadFileProps) => {
-  const { storage, databases } = await createAdminClient();
-
   try {
+    const { storage, databases } = await createAdminClient();
     const inputFile = InputFile.fromBuffer(file, file.name);
 
     const bucketFile = await storage.createFile(
@@ -95,9 +94,8 @@ export const getFiles = async ({
   sort = "$createdAt-desc",
   limit,
 }: GetFilesProps) => {
-  const { databases } = await createAdminClient();
-
   try {
+    const { databases } = await createAdminClient();
     const currentUser = await getCurrentUser();
 
     if (!currentUser) throw new Error("User not found");
@@ -122,9 +120,8 @@ export const renameFile = async ({
   extension,
   path,
 }: RenameFileProps) => {
-  const { databases } = await createAdminClient();
-
   try {
+    const { databases } = await createAdminClient();
     const newName = `${name}.${extension}`;
     const updatedFile = await databases.updateDocument(
       appwriteConfig.databaseId,
@@ -147,9 +144,8 @@ export const deleteFile = async ({
   bucketFileId,
   path,
 }: DeleteFileProps) => {
-  const { databases, storage } = await createAdminClient();
-
   try {
+    const { databases, storage } = await createAdminClient();
     const deletedFile = await databases.deleteDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
@@ -172,9 +168,8 @@ export const updateFileUsers = async ({
   emails,
   path,
 }: UpdateFileUsersProps) => {
-  const { databases } = await createAdminClient();
-
   try {
+    const { databases } = await createAdminClient();
     const updatedFile = await databases.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
