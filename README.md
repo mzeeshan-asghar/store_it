@@ -70,7 +70,7 @@ Make sure you have the following installed on your machine:
 
 - [Git](https://git-scm.com/)
 - [Node.js](https://nodejs.org/en)
-- [pnpm](hhttps://pnpm.io/) (Performant Node Package Manager)
+- [pnpm](https://pnpm.io/) (Performant Node Package Manager)
 
 **Cloning the Repository**
 
