@@ -7,7 +7,6 @@ import {
   getUsageSummary,
 } from "@/lib/utils";
 import { Models } from "node-appwrite";
-import React from "react";
 
 async function page({ params, searchParams }: SearchParamProps) {
   const type = ((await params)?.type as string) || "";
