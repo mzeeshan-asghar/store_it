@@ -2,7 +2,7 @@ import { Models } from "node-appwrite";
 import React from "react";
 import Thumbnail from "@/components/Thumbnail";
 import FormattedDateTime from "@/components/FormattedDateTime";
-import { formatDateTime } from "@/lib/utils";
+import { convertFileSize, formatDateTime } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import Image from "next/image";
@@ -30,7 +30,7 @@ export const FileDetails = ({ file }: { file: Models.Document }) => {
       <ImageThumbnail file={file} />
       <div className="space-y-4 px-2 pt-2">
         <DetailsRow label="format:" value={file.extension} />
-        <DetailsRow label="Size:" value={file.size} />
+        <DetailsRow label="Size:" value={convertFileSize(file.size)} />
         <DetailsRow label="Owner:" value={file.owner.fullName} />
         <DetailsRow
           label="Last edit:"

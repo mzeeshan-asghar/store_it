@@ -160,7 +160,7 @@ function ActionDropdown({ file }: { file: Models.Document }) {
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-        <DropdownMenuTrigger className="shad-no-focus">
+        <DropdownMenuTrigger className="shad-no-focus min-w-max">
           <Image
             src="/assets/icons/dots.svg"
             alt="dots"
