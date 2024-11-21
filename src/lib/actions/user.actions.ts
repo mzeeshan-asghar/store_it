@@ -74,11 +74,13 @@ export const verifySecret = async ({
   try {
     const { account } = await createAdminClient();
     const session = await account.createSession(accountId, password);
-    (await cookies()).set("appwrite-session", session.secret, {
+    const { key, maxAge } = appwriteConfig.sessionConfig;
+    (await cookies()).set(key, session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
       secure: true,
+      maxAge,
     });
 
     return parseStringify({ sessionId: session.$id });
@@ -110,7 +112,7 @@ export const signOutUser = async () => {
     const { account } = await createSessionClient();
 
     await account.deleteSession("current");
-    (await cookies()).delete("appwrite-session");
+    (await cookies()).delete(appwriteConfig.sessionConfig.key);
   } catch (error) {
     handleError(error, "Failed to sign out ");
   } finally {
