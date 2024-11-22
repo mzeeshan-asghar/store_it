@@ -17,35 +17,27 @@ function Search() {
   const router = useRouter();
   const path = usePathname();
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("q") || "";
 
-  const fetchFiles = useCallback(
-    async (debouncedQuery: string) => {
-      if (!debouncedQuery.trim()) {
-        setResults([]);
-        return router.push(path.replace(searchParams.toString(), ""));
-      }
+  const fetchFiles = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setResults([]);
+      return router.push(path.replace(searchParams.toString(), ""));
+    }
 
-      const files = await getFiles({ types: [], searchText: debouncedQuery });
-      setResults(files.documents || []);
-    },
-    [router, path, searchParams],
-  );
+    const files = await getFiles({ types: [], searchText: query });
+    setResults(files.documents || []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => fetchFiles(query), 300);
     return () => clearTimeout(timer);
   }, [query, fetchFiles]);
 
-  useEffect(() => {
-    if (!searchQuery) setQuery("");
-  }, [searchQuery]);
-
   const handleClickItem = (file: Models.Document) => {
-    setResults([]);
     setIsFocused(false);
     const filePath = `/${file.type === "video" || file.type === "audio" ? "media" : `${file.type}s`}`;
-    router.push(`${filePath}?q=${query}`);
+    router.push(`${filePath}?q=${file.name}`);
   };
 
   return (

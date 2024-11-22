@@ -337,7 +337,7 @@
     @apply h3 font-bold md:text-center lg:text-left !important;
   }
   .chart-description {
-    @apply subtitle-1 mt-2 w-full text-white/70 md:text-center lg:text-left !important;
+    @apply subtitle-1 mt-2 w-full text-white/70 max-[400px]:text-center md:text-center lg:text-left !important;
   }
 
   /* FileUploader */
@@ -351,7 +351,7 @@
     @apply flex items-center justify-between gap-3 rounded-xl p-3 shadow-drop-3 !important;
   }
   .preview-item-name {
-    @apply subtitle-2 mb-2 line-clamp-1 max-w-[300px] !important;
+    @apply subtitle-2 mb-1 line-clamp-1 !important;
   }
 
   .error-toast {
